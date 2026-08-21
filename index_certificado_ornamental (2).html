@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Solicitud de Constancia de No Inscripción Comercial</title>
+
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+/* =========================================================
+   CSS COMPLETO — DOCUMENTO OFICIAL ESTILO CERTIFICADO
+   ========================================================= */
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    padding:24px;
+    background:#efede8;
+    color:#111;
+    font-family:"Times New Roman",Times,serif;
+}
+
+.panel-formulario{
+    max-width:850px;
+    margin:0 auto 25px;
+    padding:25px;
+    background:#fff;
+    border:1px solid #d8d1c5;
+    border-radius:8px;
+    box-shadow:0 4px 15px rgba(0,0,0,.10);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.panel-formulario h2{
+    margin-top:0;
+    color:#263746;
+    text-align:center;
+}
+
+.grupo{margin-bottom:15px}
+.grupo label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:700;
+}
+.grupo input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #bfc4c8;
+    border-radius:5px;
+    font-size:16px;
+}
+.grupo input:focus{
+    outline:none;
+    border-color:#ae8144;
+    box-shadow:0 0 0 2px rgba(174,129,68,.12);
+}
+
+.fila{
+    display:flex;
+    gap:15px;
+}
+.fila .grupo{flex:1}
+
+.botones{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:20px;
+}
+
+button{
+    border:0;
+    padding:12px 20px;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:700;
+}
+button:hover{opacity:.88}
+.btn-pdf{background:#198754;color:#fff}
+.btn-imprimir{background:#0d6efd;color:#fff}
+.btn-limpiar{background:#6c757d;color:#fff}
+
+
+/* =========================================================
+   HOJA A4
+   ========================================================= */
+
+#documento{
+    position:relative;
+    width:210mm;
+    min-height:297mm;
+    margin:0 auto;
+    padding:30mm 28mm 28mm;
+    background:#fff;
+    font-family:"Times New Roman",Times,serif;
+    font-size:14pt;
+    line-height:1.5;
+    overflow:hidden;
+    border:1px solid #b58a50;
+    box-shadow:0 6px 22px rgba(0,0,0,.15);
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+}
+
+
+/* =========================================================
+   MARCOS
+   ========================================================= */
+
+#documento::before{
+    content:"";
+    position:absolute;
+    top:8mm;
+    right:8mm;
+    bottom:8mm;
+    left:8mm;
+    border:1.2px solid #b58a50;
+    pointer-events:none;
+    z-index:1;
+}
+
+#documento::after{
+    content:"";
+    position:absolute;
+    top:11mm;
+    right:11mm;
+    bottom:11mm;
+    left:11mm;
+    border:.7px solid #d0aa72;
+    pointer-events:none;
+    z-index:1;
+}
+
+
+/* =========================================================
+   CUATRO ESQUINAS ORNAMENTALES
+   ========================================================= */
+
+#documento .esquina{
+    position:absolute;
+    width:32mm;
+    height:32mm;
+    z-index:5;
+    pointer-events:none;
+    color:#b58a50;
+    font-family:"Times New Roman",serif;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+}
+
+.esquina-superior-izquierda{
+    top:8mm;
+    left:8mm;
+}
+
+.esquina-superior-derecha{
+    top:8mm;
+    right:8mm;
+    transform:scaleX(-1);
+}
+
+.esquina-inferior-izquierda{
+    bottom:8mm;
+    left:8mm;
+    transform:scaleY(-1);
+}
+
+.esquina-inferior-derecha{
+    bottom:8mm;
+    right:8mm;
+    transform:scale(-1);
+}
+
+
+/* Flor/hoja ornamental */
+
+#documento .esquina::before{
+    content:"❧";
+    position:absolute;
+    top:0;
+    left:0;
+    font-size:38px;
+    color:#b58a50;
+    line-height:1;
+}
+
+
+/* Rama */
+
+#documento .esquina::after{
+    content:"";
+    position:absolute;
+    top:8mm;
+    left:3mm;
+    width:25mm;
+    height:14mm;
+    border-top:1px solid #b58a50;
+    border-left:1px solid #b58a50;
+    border-radius:100% 0 0 0;
+    transform:rotate(-8deg);
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.titulo{
+    position:relative;
+    z-index:6;
+    margin:7mm 18mm 32px;
+    padding:10px 20px 15px;
+    text-align:center;
+    font-size:16pt;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.3px;
+    border-bottom:1px solid #b58a50;
+}
+
+.titulo::after{
+    content:"◆  ❦  ◆";
+    display:block;
+    margin-top:8px;
+    color:#b58a50;
+    font-size:11pt;
+    letter-spacing:3px;
+    text-align:center;
+}
+
+
+/* =========================================================
+   CONTENIDO
+   ========================================================= */
+
+.lugar-fecha,
+.destinatario,
+.cuerpo,
+.despedida,
+.firma{
+    position:relative;
+    z-index:6;
+}
+
+.lugar-fecha{
+    margin-bottom:32px;
+    text-align:left;
+}
+
+.destinatario{
+    margin-bottom:28px;
+}
+
+.destinatario p{margin:3px 0}
+
+.cuerpo{
+    margin-bottom:25px;
+    text-align:justify;
+}
+
+.despedida{margin-top:25px}
+
+
+/* =========================================================
+   FIRMA
+   ========================================================= */
+
+.firma{
+    width:100%;
+    margin-top:60px;
+    text-align:left;
+}
+
+.campo-firma{margin-bottom:18px}
+
+.linea{
+    display:inline-block;
+    min-width:330px;
+    height:25px;
+    vertical-align:bottom;
+    border-bottom:1px solid #111;
+}
+
+.etiqueta-firma{
+    display:block;
+    margin-top:2px;
+}
+
+.firma::after{
+    content:"❧  ─────────  ❦  ─────────  ❧";
+    display:block;
+    margin-top:22px;
+    color:#b58a50;
+    font-size:12pt;
+    text-align:center;
+    letter-spacing:1px;
+}
+
+
+/* =========================================================
+   IMPRESIÓN / PDF
+   ========================================================= */
+
+@media print{
+
+    @page{
+        size:A4;
+        margin:0;
+    }
+
+    html,body{
+        width:210mm;
+        min-height:297mm;
+        margin:0;
+        padding:0;
+        background:#fff!important;
+    }
+
+    .panel-formulario,
+    button{
+        display:none!important;
+    }
+
+    #documento{
+        width:210mm;
+        min-height:297mm;
+        margin:0;
+        box-shadow:none!important;
+        border:1px solid #b58a50!important;
+        overflow:hidden;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+    }
+
+    #documento::before,
+    #documento::after{
+        display:block!important;
+        border-color:#b58a50!important;
+    }
+
+    #documento .esquina,
+    #documento .esquina::before,
+    #documento .esquina::after{
+        display:block!important;
+        color:#b58a50!important;
+        border-color:#b58a50!important;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+    }
+
+    .titulo::after,
+    .firma::after{
+        color:#b58a50!important;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+    }
+}
+
+
+/* =========================================================
+   CELULARES
+   ========================================================= */
+
+@media screen and (max-width:700px){
+
+    body{padding:10px}
+
+    .fila{
+        flex-direction:column;
+        gap:0;
+    }
+
+    #documento{
+        width:100%;
+        min-height:auto;
+        padding:35px 25px;
+        font-size:12pt;
+    }
+
+    #documento::before{
+        top:8px;
+        right:8px;
+        bottom:8px;
+        left:8px;
+    }
+
+    #documento::after{
+        top:11px;
+        right:11px;
+        bottom:11px;
+        left:11px;
+    }
+
+    #documento .esquina{
+        transform:scale(.75);
+    }
+
+    .esquina-superior-derecha{
+        transform:scaleX(-1) scale(.75)!important;
+    }
+
+    .esquina-inferior-izquierda{
+        transform:scaleY(-1) scale(.75)!important;
+    }
+
+    .esquina-inferior-derecha{
+        transform:scale(-1) scale(.75)!important;
+    }
+
+    .titulo{
+        margin-left:8px;
+        margin-right:8px;
+        font-size:14pt;
+    }
+
+    .linea{min-width:100%}
+}
+
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor-principal">
+
+    <!-- ========================= -->
+    <!-- FORMULARIO EDITABLE -->
+    <!-- ========================= -->
+
+    <div class="panel-formulario">
+
+        <h2>Completar solicitud</h2>
+
+        <div class="grupo">
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha">
+        </div>
+
+        <div class="grupo">
+            <label for="nombre">Nombre y Apellido:</label>
+            <input 
+                type="text" 
+                id="nombre" 
+                placeholder="Ingrese nombre y apellido"
+            >
+        </div>
+
+        <div class="fila">
+
+            <div class="grupo">
+                <label for="dni">D.N.I:</label>
+                <input 
+                    type="text" 
+                    id="dni" 
+                    placeholder="Ingrese DNI"
+                >
+            </div>
+
+            <div class="grupo">
+                <label for="telefono">Teléfono:</label>
+                <input 
+                    type="text" 
+                    id="telefono" 
+                    placeholder="Ingrese teléfono"
+                >
+            </div>
+
+        </div>
+
+        <div class="botones">
+
+            <button 
+                type="button" 
+                class="btn-pdf" 
+                onclick="descargarPDF()">
+                Descargar PDF
+            </button>
+
+            <button 
+                type="button" 
+                class="btn-imprimir" 
+                onclick="imprimirDocumento()">
+                Imprimir
+            </button>
+
+            <button 
+                type="button" 
+                class="btn-limpiar" 
+                onclick="limpiarFormulario()">
+                Limpiar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- DOCUMENTO ORIGINAL -->
+    <!-- ========================= -->
+
+    <div id="documento">
+        <div class="esquina esquina-superior-izquierda" aria-hidden="true"></div>
+        <div class="esquina esquina-superior-derecha" aria-hidden="true"></div>
+        <div class="esquina esquina-inferior-izquierda" aria-hidden="true"></div>
+        <div class="esquina esquina-inferior-derecha" aria-hidden="true"></div>
+
+
+
+        <div class="titulo">
+            SOLICITUD DE CONSTANCIA DE NO INSCRIPCIÓN COMERCIAL
+        </div>
+
+
+        <div class="lugar-fecha">
+            Ituzaingó, Corrientes, 
+            <span id="mostrarDia">……</span>
+            de
+            <span id="mostrarMes">…………………</span>
+            del
+            <span id="mostrarAnio">20…</span>
+        </div>
+
+
+        <div class="destinatario">
+
+            <p>Al Sr. Intendente.</p>
+
+            <p><strong>SR. EMILIO NICOLAS</strong></p>
+
+            <p>S / D.</p>
+
+        </div>
+
+
+        <div class="cuerpo">
+
+            <p>
+                Me dirijo a usted a fin de solicitarle tenga a bien
+                expedirme una <strong>CONSTANCIA DE NO INSCRIPCIÓN
+                COMERCIAL</strong>. El mismo es para ser entregado ante
+                las autoridades pertinentes que la requieran.
+            </p>
+
+            <p>
+                Desde ya muchas gracias, lo saludo a usted muy atentamente.
+            </p>
+
+        </div>
+
+
+        <!-- FIRMA -->
+
+        <div class="firma">
+
+            <div class="campo-firma">
+
+                <span class="linea">
+                    <span id="mostrarNombre"></span>
+                </span>
+
+                <span class="etiqueta-firma">
+                    Nombre y Apellido
+                </span>
+
+            </div>
+
+
+            <div class="campo-firma">
+
+                <span class="linea">
+                    <span id="mostrarDni"></span>
+                </span>
+
+                <span class="etiqueta-firma">
+                    D.N.I
+                </span>
+
+            </div>
+
+
+            <div class="campo-firma">
+
+                <span class="linea">
+                    <span id="mostrarTelefono"></span>
+                </span>
+
+                <span class="etiqueta-firma">
+                    Teléfono
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* ==========================================
+       MOSTRAR DATOS EN EL DOCUMENTO
+       ========================================== */
+
+    const fecha = document.getElementById("fecha");
+    const nombre = document.getElementById("nombre");
+    const dni = document.getElementById("dni");
+    const telefono = document.getElementById("telefono");
+
+
+    function actualizarDocumento() {
+
+        /* Nombre */
+        document.getElementById("mostrarNombre").textContent =
+            nombre.value;
+
+        /* DNI */
+        document.getElementById("mostrarDni").textContent =
+            dni.value;
+
+        /* Teléfono */
+        document.getElementById("mostrarTelefono").textContent =
+            telefono.value;
+
+
+        /* Fecha */
+        if (fecha.value !== "") {
+
+            const fechaSeleccionada =
+                new Date(fecha.value + "T00:00:00");
+
+            const dia =
+                String(fechaSeleccionada.getDate()).padStart(2, "0");
+
+            const meses = [
+                "enero",
+                "febrero",
+                "marzo",
+                "abril",
+                "mayo",
+                "junio",
+                "julio",
+                "agosto",
+                "septiembre",
+                "octubre",
+                "noviembre",
+                "diciembre"
+            ];
+
+            const mes =
+                meses[fechaSeleccionada.getMonth()];
+
+            const anio =
+                fechaSeleccionada.getFullYear();
+
+            document.getElementById("mostrarDia").textContent = dia;
+            document.getElementById("mostrarMes").textContent = mes;
+            document.getElementById("mostrarAnio").textContent = anio;
+
+        } else {
+
+            document.getElementById("mostrarDia").textContent = "……";
+            document.getElementById("mostrarMes").textContent = "…………………";
+            document.getElementById("mostrarAnio").textContent = "20…";
+        }
+    }
+
+
+    /* Actualizar automáticamente */
+    nombre.addEventListener("input", actualizarDocumento);
+    dni.addEventListener("input", actualizarDocumento);
+    telefono.addEventListener("input", actualizarDocumento);
+    fecha.addEventListener("change", actualizarDocumento);
+
+
+    /* ==========================================
+       VALIDAR DATOS
+       ========================================== */
+
+    function validarDatos() {
+
+        if (fecha.value === "") {
+            alert("Por favor, complete la fecha.");
+            fecha.focus();
+            return false;
+        }
+
+        if (nombre.value.trim() === "") {
+            alert("Por favor, complete Nombre y Apellido.");
+            nombre.focus();
+            return false;
+        }
+
+        if (dni.value.trim() === "") {
+            alert("Por favor, complete el D.N.I.");
+            dni.focus();
+            return false;
+        }
+
+        if (telefono.value.trim() === "") {
+            alert("Por favor, complete el teléfono.");
+            telefono.focus();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /* ==========================================
+       DESCARGAR PDF
+       ========================================== */
+
+    function descargarPDF() {
+
+        if (!validarDatos()) {
+            return;
+        }
+
+        actualizarDocumento();
+
+        const documento =
+            document.getElementById("documento");
+
+        const nombreArchivo =
+            "Solicitud_Constancia_No_Inscripcion_Comercial.pdf";
+
+
+        const opciones = {
+
+            margin: 0,
+
+            filename: nombreArchivo,
+
+            image: {
+                type: "jpeg",
+                quality: 1
+            },
+
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: false
+            },
+
+            jsPDF: {
+                unit: "mm",
+                format: "a4",
+                orientation: "portrait"
+            }
+
+        };
+
+
+        html2pdf()
+            .set(opciones)
+            .from(documento)
+            .save()
+
+            .catch(function(error) {
+
+                console.error(error);
+
+                alert(
+                    "No se pudo generar el PDF. " +
+                    "Intente nuevamente o utilice el botón Imprimir."
+                );
+
+            });
+    }
+
+
+    /* ==========================================
+       IMPRIMIR
+       ========================================== */
+
+    function imprimirDocumento() {
+
+        if (!validarDatos()) {
+            return;
+        }
+
+        actualizarDocumento();
+
+        window.print();
+    }
+
+
+    /* ==========================================
+       LIMPIAR FORMULARIO
+       ========================================== */
+
+    function limpiarFormulario() {
+
+        const confirmar =
+            confirm(
+                "¿Está seguro de que desea borrar todos los datos?"
+            );
+
+        if (!confirmar) {
+            return;
+        }
+
+        fecha.value = "";
+        nombre.value = "";
+        dni.value = "";
+        telefono.value = "";
+
+        actualizarDocumento();
+    }
+
+
+    /* ==========================================
+       FECHA ACTUAL POR DEFECTO
+       ========================================== */
+
+    window.addEventListener("DOMContentLoaded", function() {
+
+        const hoy = new Date();
+
+        const anio = hoy.getFullYear();
+
+        const mes =
+            String(hoy.getMonth() + 1).padStart(2, "0");
+
+        const dia =
+            String(hoy.getDate()).padStart(2, "0");
+
+        fecha.value =
+            `${anio}-${mes}-${dia}`;
+
+        actualizarDocumento();
+
+    });
+
+</script>
+
+</body>
+</html>
