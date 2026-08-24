@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Baja Comercial</title>
+
+<!-- Librerías para generar el PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #e9edf3;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+  }
+  .pagina { max-width: 850px; margin: 0 auto; }
+  .nota {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 18mm 16mm;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 2px 18px rgba(0,0,0,.16);
+    overflow: hidden;
+  }
+  .nota::before {
+    content: "";
+    position: absolute;
+    inset: 7mm;
+    border: 1px solid #b9c1ce;
+    pointer-events: none;
+  }
+  .contenido { position: relative; z-index: 1; }
+  .logo { display:block; width: 120px; height:120px; object-fit:contain; margin: 0 auto 8px; }
+  .cabecera-logo { text-align:center; margin-bottom: 12px; }
+  .cabecera-logo .institucion { font-size: 13px; font-weight: 700; color:#0b2455; margin: 2px 0; }
+  .cabecera-logo .titulo { font-size: 18px; font-weight: 800; color:#0b2455; margin: 8px 0 0; letter-spacing: 1px; }
+  .fecha { text-align:right; margin: 8px 0 18px; }
+  input {
+    border: none;
+    border-bottom: 1px solid #222;
+    background: transparent;
+    font: inherit;
+    padding: 2px 4px;
+    outline: none;
+  }
+  input:focus { border-bottom: 2px solid #0b2455; }
+  #fecha { width: 145px; }
+  .encabezado p { margin: 5px 0; }
+  .texto { text-align: justify; line-height: 1.55; margin-top: 18px; }
+  .datos { margin-top: 18px; }
+  .datos p { margin: 10px 0; line-height: 1.5; }
+  .datos input { width: 58%; }
+  #expediente { width: 45%; }
+  #registro { width: 39%; }
+  #habilitado, #baja { width: 170px; }
+  .documentacion { margin-top: 18px; }
+  .documentaciones p { margin: 8px 0; }
+  .despedida { margin-top: 28px; line-height:1.5; }
+  .firma { margin-top: 42px; margin-left:auto; width:350px; text-align:right; }
+  .firma p { margin: 7px 0; }
+  #propietario { width: 210px; }
+  #dni { width: 170px; }
+  #telefono { width: 170px; }
+  .acciones { text-align:center; margin: 20px auto; }
+  button {
+    border:0; border-radius:6px; padding:12px 22px; margin:5px;
+    font-size:15px; font-weight:700; cursor:pointer;
+  }
+  #botonPDF { background:#0b2455; color:white; }
+  #botonGuardar { background:#198754; color:white; }
+  #botonLimpiar { background:#dc3545; color:white; }
+  button:hover { opacity:.9; }
+  #mensaje { text-align:center; min-height:22px; font-weight:700; }
+  .ayuda { text-align:center; color:#555; font-size:12px; margin-top:8px; }
+
+  @media (max-width: 900px) {
+    body { padding: 8px; }
+    .nota { width:100%; min-height:auto; padding: 18mm 12mm; }
+    .datos input { width: 55%; }
+  }
+
+  @media print {
+    @page { size:A4; margin:0; }
+    body { background:#fff; padding:0; margin:0; }
+    .pagina { width:210mm; margin:0; }
+    .nota { width:210mm; min-height:297mm; margin:0; box-shadow:none; }
+    .acciones, #mensaje, .ayuda { display:none !important; }
+    input { color:#000; }
+    .nota::before { border-color:#b9c1ce; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+
+<style id="marco-elegante">
+  body {
+    background: #eef1f5 !important;
+  }
+
+  .pagina {
+    padding: 28px 0 40px !important;
+  }
+
+  .nota {
+    position: relative;
+    background: #fff !important;
+    border: 2px solid #18365f !important;
+    box-shadow: 0 0 0 5px #fff, 0 0 0 7px #b89b5e, 0 8px 25px rgba(0,0,0,.14) !important;
+    padding: 28px 34px !important;
+    overflow: hidden;
+  }
+
+  /* Segundo marco interior */
+  .nota::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px solid #b89b5e;
+    pointer-events: none;
+  }
+
+  /* Esquinas ornamentales */
+.encabezado {
+    position: relative;
+    z-index: 1;
+    padding: 12px 18px 10px !important;
+    margin-bottom: 22px !important;
+    border-bottom: 2px solid #b89b5e !important;
+  }
+.datos {
+    position: relative;
+    z-index: 1;
+    padding: 14px 18px;
+    border-left: 4px solid #18365f;
+    border-right: 1px solid #d8c79e;
+    background: linear-gradient(to right, #faf8f1, #ffffff);
+    border-radius: 3px;
+  }
+
+  .documentacion,
+  .documentaciones,
+  .despedida,
+  .firma {
+    position: relative;
+    z-index: 1;
+  }
+
+  input {
+    background: transparent !important;
+    border-bottom: 1px solid #18365f !important;
+  }
+
+  input:focus {
+    border-bottom: 2px solid #b89b5e !important;
+  }
+
+  #botonPDF {
+    background: #18365f !important;
+    color: white !important;
+    border: 2px solid #b89b5e !important;
+    border-radius: 6px !important;
+    padding: 12px 25px !important;
+    font-weight: bold;
+    box-shadow: 0 3px 8px rgba(0,0,0,.18);
+  }
+
+  #botonPDF:hover {
+    background: #244b7c !important;
+    transform: translateY(-1px);
+  }
+
+  @media print {
+    body {
+      background: white !important;
+    }
+
+    .pagina {
+      padding: 0 !important;
+    }
+
+    .nota {
+      box-shadow: none !important;
+      border: 2px solid #18365f !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .nota::before,
+    .nota::after,
+    .encabezado::before,
+#botonPDF {
+      display: none !important;
+    }
+  }
+</style>
+
+</head>
+<body>
+<main class="pagina">
+<section class="nota" id="nota">
+<div class="contenido">
+
+  <div class="cabecera-logo">
+<p class="institucion">AGENCIA DE RECAUDACIÓN TRIBUTARIA DE ITUZAINGÓ</p>
+    <p class="institucion">MUNICIPALIDAD DE ITUZAINGÓ - CORRIENTES</p>
+    <p class="titulo">SOLICITUD DE BAJA COMERCIAL</p>
+  </div>
+
+  <p class="fecha">Ituzaingó, Ctes. <input type="date" id="fecha"></p>
+
+  <div class="encabezado">
+    <p><strong>SEÑOR</strong></p>
+    <p><strong>INTENDENTE MUNICIPAL</strong></p>
+    <p><strong>SR. EMILIO NICOLAS</strong></p>
+    <p><strong>S………………………/………………………D</strong></p>
+    <p class="texto">Me dirijo a usted, con el fin de solicitar la <strong>BAJA COMERCIAL</strong> del comercio de mi propiedad cuyos datos son los siguientes:</p>
+  </div>
+
+  <div class="datos">
+    <p><strong>Denominación del Comercio:</strong> <input type="text" id="denominacion"></p>
+    <p><strong>Rubro Principal:</strong> <input type="text" id="rubro"></p>
+    <p><strong>Anexo:</strong> <input type="text" id="anexo"></p>
+    <p><strong>Dirección Comercial:</strong> <input type="text" id="direccion"></p>
+    <p><strong>Expte. De Habilitación Comercial:</strong> <input type="text" id="expediente"></p>
+    <p><strong>N° de Inscripción del Registro de Comercio:</strong> <input type="text" id="registro"></p>
+    <p><strong>Habilitado el:</strong> <input type="date" id="habilitado"></p>
+    <p><strong>Baja comercial a partir del:</strong> <input type="date" id="baja"></p>
+  </div>
+
+  <div class="documentacion">
+    <p><strong>Adjunto las siguientes documentaciones:</strong></p>
+  </div>
+  <div class="documentaciones">
+    <p>a) Cartilla y/o Resolución Municipal Habilitación Original.</p>
+    <p>b) Cartilla de Rehabilitación Comercial Original</p>
+    <p>c) Certificados Libre Deuda Municipal.</p>
+  </div>
+
+  <p class="despedida">Sin otro particular, lo saludo atentamente.</p>
+
+  <div class="firma">
+    <p>………………………………………………</p>
+    <p>Firma del Propietario.</p>
+    <p><strong>Aclaración:</strong> <input type="text" id="propietario"></p>
+    <p><strong>D.N.I. N°:</strong> <input type="text" id="dni"></p>
+    <p><strong>Teléfono:</strong> <input type="tel" id="telefono"></p>
+  </div>
+
+</div>
+</section>
+
+<div class="acciones">
+  <button type="button" id="botonGuardar" onclick="guardarDatos()">💾 GUARDAR DATOS</button>
+  <button type="button" id="botonPDF" onclick="generarPDF()">📄 DESCARGAR PDF</button>
+  <button type="button" id="botonLimpiar" onclick="limpiarDatos()">🗑️ LIMPIAR</button>
+</div>
+<div id="mensaje"></div>
+<p class="ayuda">Si el PDF no se descarga automáticamente, el navegador mostrará una opción para guardarlo como PDF.</p>
+</main>
+
+<script>
+const CAMPOS = [
+  'fecha','denominacion','rubro','anexo','direccion','expediente','registro',
+  'habilitado','baja','propietario','dni','telefono'
+];
+const CLAVE = 'bajaComercialItuzaingo';
+
+function mostrarMensaje(texto, error=false) {
+  const m = document.getElementById('mensaje');
+  m.textContent = texto;
+  m.style.color = error ? '#dc3545' : '#198754';
+  setTimeout(() => { m.textContent=''; }, 4000);
+}
+
+function guardarDatos() {
+  const datos = {};
+  CAMPOS.forEach(id => datos[id] = document.getElementById(id).value);
+  localStorage.setItem(CLAVE, JSON.stringify(datos));
+  mostrarMensaje('✓ Datos guardados correctamente');
+}
+
+function cargarDatos() {
+  try {
+    const datos = JSON.parse(localStorage.getItem(CLAVE) || '{}');
+    CAMPOS.forEach(id => {
+      if (datos[id] !== undefined) document.getElementById(id).value = datos[id];
+    });
+  } catch(e) { console.error(e); }
+}
+
+function limpiarDatos() {
+  if (!confirm('¿Está seguro de que desea borrar todos los datos?')) return;
+  CAMPOS.forEach(id => document.getElementById(id).value='');
+  localStorage.removeItem(CLAVE);
+  mostrarMensaje('✓ Datos eliminados');
+}
+
+async function generarPDF() {
+  const nota = document.getElementById('nota');
+  const acciones = document.querySelector('.acciones');
+  const mensaje = document.getElementById('mensaje');
+  const ayuda = document.querySelector('.ayuda');
+  const boton = document.getElementById('botonPDF');
+
+  guardarDatos();
+  boton.disabled = true;
+  boton.textContent = 'GENERANDO PDF...';
+  acciones.style.display = 'none';
+  mensaje.style.display = 'none';
+  ayuda.style.display = 'none';
+
+  try {
+    if (typeof html2canvas !== 'function' || !window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('Las librerías PDF no están disponibles.');
+    }
+
+    await new Promise(r => setTimeout(r, 250));
+
+    const canvas = await html2canvas(nota, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: nota.scrollWidth,
+      windowHeight: nota.scrollHeight
+    });
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4', compress:true });
+    const pageW = 210, pageH = 297, margin = 5;
+    let w = pageW - margin*2;
+    let h = canvas.height * w / canvas.width;
+
+    if (h > pageH - margin*2) {
+      h = pageH - margin*2;
+      w = canvas.width * h / canvas.height;
+    }
+
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (pageW-w)/2, margin, w, h, undefined, 'FAST');
+    pdf.save('solicitud_baja_comercial.pdf');
+
+    mensaje.style.display = 'block';
+    mostrarMensaje('✓ PDF descargado correctamente');
+  } catch (error) {
+    console.error(error);
+    mensaje.style.display = 'block';
+    mostrarMensaje('No se pudo generar el PDF. Se abrirá la impresión para guardarlo como PDF.', true);
+    // Fallback: el navegador permite elegir "Guardar como PDF".
+    setTimeout(() => window.print(), 300);
+  } finally {
+    acciones.style.display = 'block';
+    ayuda.style.display = 'block';
+    boton.disabled = false;
+    boton.textContent = '📄 DESCARGAR PDF';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', cargarDatos);
+</script>
+</body>
+</html>
